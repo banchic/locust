@@ -1,4 +1,5 @@
 *.pyc
+.idea
 locust.wpr
 locust.egg-info/**
 locustio.egg-info/**
