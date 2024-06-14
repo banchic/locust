@@ -5,12 +5,13 @@ import json
 import logging
 import mimetypes
 import os.path
+import random
 from functools import wraps
 from html import escape
 from io import StringIO
 from itertools import chain
 from json import dumps
-from time import time
+from time import time, sleep
 from typing import TYPE_CHECKING, Any
 
 import gevent
@@ -302,7 +303,7 @@ class WebUI:
                 environment.runner.exceptions = {}
             return "ok"
 
-        @app.route("/stats/report")
+        @app.route("/stat-----------s/report")
         @self.auth_required_if_enabled
         def stats_report() -> Response:
             theme = request.args.get("theme", "")
@@ -494,6 +495,48 @@ class WebUI:
         @self.auth_required_if_enabled
         def logs():
             return jsonify({"master": get_logs(), "workers": self.environment.worker_logs})
+
+        @app.route("/total_rps")
+        @self.auth_required_if_enabled
+        def total_rps():
+            stats: list[dict[str, Any]] = []
+            for s in chain(sort_stats(environment.runner.environment.custom_stats.entries),
+                           [environment.runner.environment.custom_stats.total]):
+                stats.append(s.to_dict())
+            total_stats = stats[-1]
+            report = {"total_rps": total_stats["current_rps"]}
+
+            return jsonify(report)
+
+        @app.route("/total_test")
+        @self.auth_required_if_enabled
+        def total_test():
+            # sleep(random.randint(10,100))
+            report = {}
+
+            return jsonify(report)
+        @app.route("/total_tps")
+        @self.auth_required_if_enabled
+        def total_tps():
+            stats: list[dict[str, Any]] = []
+            for s in chain(sort_stats(environment.runner.stats.entries), [environment.runner.stats.total]):
+                stats.append(s.to_dict())
+
+            errors = [e.serialize() for e in environment.runner.errors.values()]
+
+            # Truncate the total number of stats and errors displayed since a large number of rows will cause the app
+            # to render extremely slowly. Aggregate stats should be preserved.
+            truncated_stats = stats[:500]
+            if len(stats) > 500:
+                truncated_stats += [stats[-1]]
+
+            report = {}
+            total_stats = stats[-1]
+
+            if stats:
+                report["total_tps"] = total_stats["current_rps"]
+
+            return jsonify(report)
 
         @app.route("/login")
         def login():

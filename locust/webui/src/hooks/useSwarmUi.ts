@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { SWARM_STATE } from 'constants/swarm';
 import useInterval from 'hooks/useInterval';
-import { useGetExceptionsQuery, useGetStatsQuery, useGetTasksQuery } from 'redux/api/swarm';
+import { useGetExceptionsQuery, useGetStatsQuery, useGetTasksQuery, useGetTotalRpsQuery, useGetTotalTpsQuery } from 'redux/api/swarm';
 import { useAction, useSelector } from 'redux/hooks';
 import { swarmActions } from 'redux/slice/swarm.slice';
 import { uiActions } from 'redux/slice/ui.slice';
@@ -20,6 +20,8 @@ export default function useSwarmUi() {
   const hasSetInitStats = useRef(false);
   const [shouldAddMarker, setShouldAddMarker] = useState(false);
 
+  const { data: totalRpsData, refetch: refetchTotalRps } = useGetTotalRpsQuery();
+  const { data: totalTpsData, refetch: refetchTotalTps } = useGetTotalTpsQuery();
   const { data: statsData, refetch: refetchStats } = useGetStatsQuery();
   const { data: tasksData, refetch: refetchTasks } = useGetTasksQuery();
   const { data: exceptionsData, refetch: refetchExceptions } = useGetExceptionsQuery();
@@ -69,7 +71,6 @@ export default function useSwarmUi() {
       extendedStats,
       stats,
       errors,
-      totalRps: totalRpsRounded,
       failRatio: totalFailureRatioRounded,
       workers,
       userCount,
@@ -102,7 +103,19 @@ export default function useSwarmUi() {
     if (tasksData) {
       setUi({ ratios: tasksData });
     }
-  }, [tasksData]);
+  }, [statsData]);
+
+  useEffect(() => {
+    if (totalRpsData) {
+      setUi({ totalRps: totalRpsData.totalRps });
+    }
+  }, [totalRpsData]);
+
+  useEffect(() => {
+    if (totalTpsData) {
+      setUi({ totalTps: totalTpsData.totalTps });
+    }
+  }, [totalTpsData]);
 
   useEffect(() => {
     if (exceptionsData) {
@@ -110,6 +123,12 @@ export default function useSwarmUi() {
     }
   }, [exceptionsData]);
 
+  useInterval(refetchTotalRps, 1000, {
+    shouldRunInterval: shouldRunRefetchInterval,
+  });
+  useInterval(refetchTotalTps, 1000, {
+    shouldRunInterval: shouldRunRefetchInterval,
+  });
   useInterval(refetchStats, STATS_REFETCH_INTERVAL, {
     shouldRunInterval: shouldRunRefetchInterval,
   });

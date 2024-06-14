@@ -16,7 +16,6 @@ describe('HtmlReport', () => {
     expect(getByRole('heading', { name: 'Final ratio' })).toBeTruthy();
     expect(getByRole('link', { name: 'Download the Report' }));
     expect(getByText(swarmReportMock.locustfile)).toBeTruthy();
-    expect(getByText(swarmReportMock.host)).toBeTruthy();
   });
 
   test('formats the start and end time as expected', () => {

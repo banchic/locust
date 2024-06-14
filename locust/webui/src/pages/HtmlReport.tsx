@@ -21,7 +21,6 @@ export default function HtmlReport({
   startTime,
   endTime,
   charts,
-  host,
   exceptionsStatistics,
   requestsStatistics,
   failuresStatistics,
@@ -56,10 +55,7 @@ export default function HtmlReport({
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', columnGap: 0.5 }}>
-            <Typography fontWeight={600}>Target Host:</Typography>
-            <Typography>{host || 'None'}</Typography>
-          </Box>
+
 
           <Box sx={{ display: 'flex', columnGap: 0.5 }}>
             <Typography fontWeight={600}>Script:</Typography>

@@ -7,24 +7,20 @@ import { IUiState } from 'redux/slice/ui.slice';
 import { IRootState } from 'redux/store';
 
 interface ISwarmMonitor
-  extends Pick<ISwarmState, 'isDistributed' | 'host' | 'state' | 'workerCount'>,
-    Pick<IUiState, 'totalRps' | 'failRatio' | 'userCount'> {}
+  extends Pick<ISwarmState, 'isDistributed' | 'state' | 'workerCount'>,
+    Pick<IUiState, 'totalRps' | 'totalTps' | 'failRatio' | 'userCount'> {}
 
 function SwarmMonitor({
   isDistributed,
   state,
-  host,
   totalRps,
+  totalTps,
   failRatio,
   userCount,
   workerCount,
 }: ISwarmMonitor) {
   return (
     <Box sx={{ display: 'flex', columnGap: 2 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant='button'>Host</Typography>
-        <Typography>{host}</Typography>
-      </Box>
       <Divider flexItem orientation='vertical' />
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant='button'>Status</Typography>
@@ -55,6 +51,11 @@ function SwarmMonitor({
       </Box>
       <Divider flexItem orientation='vertical' />
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Typography variant='button'>TPS</Typography>
+        <Typography variant='button'>{totalTps}</Typography>
+      </Box>
+      <Divider flexItem orientation='vertical' />
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography variant='button'>Failures</Typography>
         <Typography variant='button'>{`${failRatio}%`}</Typography>
       </Box>
@@ -63,13 +64,13 @@ function SwarmMonitor({
 }
 
 const storeConnector = ({
-  swarm: { isDistributed, state, host, workerCount },
-  ui: { totalRps, failRatio, userCount },
+  swarm: { isDistributed, state, workerCount },
+  ui: { totalRps, totalTps, failRatio, userCount },
 }: IRootState) => ({
   isDistributed,
   state,
-  host,
   totalRps,
+  totalTps,
   failRatio,
   userCount,
   workerCount,

@@ -26,7 +26,7 @@ export default function Navbar() {
               }}
               variant='h3'
             >
-              Locust
+              LPT
             </Typography>
           </Link>
           <Box sx={{ display: 'flex', columnGap: 6 }}>

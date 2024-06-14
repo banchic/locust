@@ -37,7 +37,6 @@ describe('SwarmForm', () => {
 
       if (submittedData) {
         expect(submittedData).toEqual({
-          host: swarmStateMock.host,
           runTime: '',
           spawnRate: '1',
           userCount: '1',
@@ -176,7 +175,6 @@ describe('SwarmForm', () => {
 
       if (submittedData) {
         expect(submittedData).toEqual({
-          host: swarmStateMock.host,
           runTime: '',
           spawnRate: '1',
           userCount: '1',
@@ -233,7 +231,6 @@ describe('SwarmForm', () => {
 
       if (submittedData) {
         expect(submittedData).toEqual({
-          host: swarmStateMock.host,
           runTime: '',
           spawnRate: '1',
           userCount: '1',

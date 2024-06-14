@@ -22,7 +22,7 @@ import { swarmActions, ISwarmState } from 'redux/slice/swarm.slice';
 import { IRootState } from 'redux/store';
 import { isEmpty } from 'utils/object';
 
-interface ISwarmFormInput extends Pick<ISwarmState, 'host' | 'spawnRate' | 'userCount'> {
+interface ISwarmFormInput extends Pick<ISwarmState, 'spawnRate' | 'userCount'> {
   runTime: string;
   userClasses: string[];
   shapeClass: string;
@@ -40,7 +40,6 @@ interface ISwarmForm
       | 'availableUserClasses'
       | 'extraOptions'
       | 'isShape'
-      | 'host'
       | 'overrideHostWarning'
       | 'runTime'
       | 'showUserclassPicker'
@@ -51,11 +50,9 @@ interface ISwarmForm
 function SwarmForm({
   availableShapeClasses,
   availableUserClasses,
-  host,
   extraOptions,
   isShape,
   numUsers,
-  overrideHostWarning,
   runTime,
   setSwarm,
   showUserclassPicker,
@@ -67,7 +64,6 @@ function SwarmForm({
   const onStartSwarm = (inputData: ISwarmFormInput) => {
     setSwarm({
       state: SWARM_STATE.RUNNING,
-      host: inputData.host || host,
       runTime: inputData.runTime,
       spawnRate: Number(inputData.spawnRate) || null,
       numUsers: Number(inputData.userCount) || null,
@@ -109,24 +105,14 @@ function SwarmForm({
           <TextField
             defaultValue={(isShape && '-') || numUsers || 1}
             disabled={!!isShape}
-            label='Number of users (peak concurrency)'
+            label='RPS in start'
             name='userCount'
           />
           <TextField
             defaultValue={(isShape && '-') || spawnRate || 1}
             disabled={!!isShape}
-            label='Ramp up (users started/second)'
+            label='RPS up in seconds'
             name='spawnRate'
-            title='Disabled for tests using LoadTestShape class'
-          />
-          <TextField
-            defaultValue={host}
-            label={`Host ${
-              overrideHostWarning
-                ? '(setting this will override the host for the User classes)'
-                : ''
-            }`}
-            name='host'
             title='Disabled for tests using LoadTestShape class'
           />
           <Accordion>
@@ -158,7 +144,6 @@ const storeConnector = ({
     availableUserClasses,
     extraOptions,
     isShape,
-    host,
     numUsers,
     overrideHostWarning,
     runTime,
@@ -170,7 +155,6 @@ const storeConnector = ({
   availableUserClasses,
   extraOptions,
   isShape,
-  host,
   overrideHostWarning,
   showUserclassPicker,
   numUsers,

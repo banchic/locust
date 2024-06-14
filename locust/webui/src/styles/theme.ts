@@ -5,10 +5,10 @@ const createTheme = (mode: PaletteMode) =>
     palette: {
       mode,
       primary: {
-        main: '#15803d',
+        main: '#0088BB',
       },
       success: {
-        main: '#00C853',
+        main: '#00BBEE',
       },
     },
     components: {

@@ -20,7 +20,6 @@ describe('SwarmMonitor', () => {
   test('should render host, status, RPS, and failures on first load', () => {
     const { getByText } = renderWithProvider(<SwarmMonitor />, { swarm: swarmStateMock });
 
-    expect(getByText('Host').nextElementSibling?.textContent).toBe(swarmStateMock.host);
     expect(getByText('Status').nextElementSibling?.textContent).toBe(SWARM_STATE.READY);
     expect(getByText('RPS').nextElementSibling?.textContent).toBe('0');
     expect(getByText('Failures').nextElementSibling?.textContent).toBe('0%');
@@ -39,7 +38,6 @@ describe('SwarmMonitor', () => {
       ui: mockUiState,
     });
 
-    expect(getByText('Host').nextElementSibling?.textContent).toBe(swarmStateMock.host);
     expect(getByText('Status').nextElementSibling?.textContent).toBe(SWARM_STATE.RUNNING);
     expect(getByText('RPS').nextElementSibling?.textContent).toBe(mockUiState.totalRps);
     expect(getByText('Users').nextElementSibling?.textContent).toBe(mockUiState.userCount);

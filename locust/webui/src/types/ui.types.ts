@@ -92,7 +92,6 @@ export interface IStatsResponse {
   stats: ISwarmStat[];
   errors: ISwarmError[];
   workers: ISwarmWorker[];
-  totalRps: number;
   totalFailPerSec: number;
   totalAvgResponseTime: number;
   currentResponseTimePercentiles: {
@@ -101,7 +100,12 @@ export interface IStatsResponse {
   failRatio: number;
   userCount: number;
 }
-
+export interface ITotalRpsResponse {
+  totalRps: number;
+}
+export interface ITotalTpsResponse {
+  totalTps: number;
+}
 export interface ILogsResponse {
   master: string[];
   workers: {

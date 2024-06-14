@@ -34,7 +34,6 @@ export interface IReport {
   showDownloadLink: boolean;
   startTime: string;
   endTime: string;
-  host: string;
   charts: ICharts;
   requestsStatistics: ISwarmStat[];
   failuresStatistics: ISwarmError[];
@@ -52,7 +51,6 @@ export interface IReportTemplateArgs extends Omit<IReport, 'charts'> {
 
 export interface ISwarmUser {
   fixedCount: number;
-  host: string;
   weight: number;
   tasks: string[];
 }

@@ -170,9 +170,6 @@ function SwarmUserClassPicker({
                       </TableCell>
 
                       <TableCell>{name}</TableCell>
-                      <TableCell>
-                        <Typography variant='subtitle2'>{userClass.host}</Typography>
-                      </TableCell>
                       <TableCell align='right'>
                         <IconButton
                           onClick={() => {

@@ -11,6 +11,7 @@ const responseTimePercentileKey2 =
 
 const initialState = {
   totalRps: 0,
+  totalTps: 0,
   failRatio: 0,
   stats: [],
   errors: [],
