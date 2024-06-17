@@ -20,6 +20,8 @@ export interface IExtraOptions {
 
 export interface IHistory {
   currentRps: number;
+  currentRpsCustom: number;
+  currentTps: number;
   currentFailPerSec: number;
   userCount: number;
   time: string;

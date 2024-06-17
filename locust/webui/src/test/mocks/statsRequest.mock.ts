@@ -150,6 +150,8 @@ export const statsResponseTransformed = {
     'responseTimePercentile0.5': [2],
     'responseTimePercentile0.95': [2],
     currentRps: [1932.5],
+    currentRpsCustom: [1932.5],
+    currentTps: [1932.5],
     currentFailPerSec: [1932.5],
     userCount: [1],
     totalAvgResponseTime: [0.41],

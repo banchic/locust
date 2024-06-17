@@ -19,6 +19,7 @@ export interface IUiState {
   totalTps: number;
   failRatio: number;
   stats: ISwarmStat[];
+  statsCustom: ISwarmStat[];
   errors: ISwarmError[];
   workers?: ISwarmWorker[];
   exceptions: ISwarmException[];
@@ -34,6 +35,7 @@ const initialState = {
   totalTps: 0,
   failRatio: 0,
   stats: [] as ISwarmStat[],
+  statsCustom: [] as ISwarmStat[],
   errors: [] as ISwarmError[],
   exceptions: [] as ISwarmException[],
   charts: swarmTemplateArgs.history?.reduce(updateArraysAtProps, {}) as ICharts,
@@ -53,6 +55,8 @@ const addSpaceToChartsBetweenTests = (charts: ICharts) => {
   return updateArraysAtProps(charts, {
     ...percentileNullValues,
     currentRps: { value: null },
+    currentRpsCustom: { value: null },
+    currentTps: { value: null },
     currentFailPerSec: { value: null },
     totalAvgResponseTime: { value: null },
     userCount: { value: null },

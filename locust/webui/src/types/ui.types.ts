@@ -55,6 +55,8 @@ interface NullChartValue {
 
 export interface ICharts {
   currentRps: (number | NullChartValue)[];
+  currentRpsCustom: (number | NullChartValue)[];
+  currentTps: (number | NullChartValue)[];
   currentFailPerSec: (number | NullChartValue)[];
   [key: `responseTimePercentile${number}`]: (number | null | NullChartValue)[];
   totalAvgResponseTime: (number | NullChartValue)[];
@@ -92,6 +94,8 @@ export interface IStatsResponse {
   stats: ISwarmStat[];
   errors: ISwarmError[];
   workers: ISwarmWorker[];
+  totalRps: number;
+  totalTps: number;
   totalFailPerSec: number;
   totalAvgResponseTime: number;
   currentResponseTimePercentiles: {

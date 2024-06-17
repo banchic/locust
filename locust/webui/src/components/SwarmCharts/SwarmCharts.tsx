@@ -27,6 +27,22 @@ const availableSwarmCharts: ILineChartProps[] = [
     colors: ['#00ca5a', '#ff6d6d'],
   },
   {
+    title: 'Total Requests per Second (Custom)',
+    lines: [
+      { name: 'RPS', key: 'currentRpsCustom' },
+      { name: 'Failures/s', key: 'currentFailPerSec' },
+    ],
+    colors: ['#00ca5a', '#ff6d6d'],
+  },
+  {
+    title: 'Total Transactions per Second (Custom)',
+    lines: [
+      { name: 'TPS', key: 'currentTps' },
+      { name: 'Failures/s', key: 'currentFailPerSec' },
+    ],
+    colors: ['#00ca5a', '#ff6d6d'],
+  },
+  {
     title: 'Response Times (ms)',
     lines: [
       ...percentilesToChartLines,

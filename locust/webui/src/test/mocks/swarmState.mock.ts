@@ -42,6 +42,8 @@ export const swarmReportMock: IReport = {
   tasks: {} as ISwarmRatios,
   charts: {
     currentRps: [0],
+    currentRpsCustom: [0],
+    currentTps: [0],
     currentFailPerSec: [0],
     totalAvgResponseTime: [0],
     userCount: [0],

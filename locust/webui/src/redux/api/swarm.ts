@@ -16,6 +16,10 @@ export const api = createApi({
       query: () => 'stats/requests',
       transformResponse: camelCaseKeys<IStatsResponse>,
     }),
+    getStatsCustom: builder.query<IStatsResponse, void>({
+      query: () => 'stats_custom/requests',
+      transformResponse: camelCaseKeys<IStatsResponse>,
+    }),
     getTotalRps: builder.query<ITotalRpsResponse, void>({
       query: () => 'total_rps',
       transformResponse: camelCaseKeys<ITotalRpsResponse>,
@@ -57,6 +61,7 @@ export const api = createApi({
 
 export const {
   useGetStatsQuery,
+  useGetStatsCustomQuery,
   useGetTotalRpsQuery,
   useGetTotalTpsQuery,
   useGetTasksQuery,

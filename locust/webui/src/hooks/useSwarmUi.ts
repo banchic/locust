@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { SWARM_STATE } from 'constants/swarm';
 import useInterval from 'hooks/useInterval';
-import { useGetExceptionsQuery, useGetStatsQuery, useGetTasksQuery, useGetTotalRpsQuery, useGetTotalTpsQuery } from 'redux/api/swarm';
+import { useGetExceptionsQuery, useGetStatsQuery, useGetStatsCustomQuery, useGetTasksQuery, useGetTotalRpsQuery, useGetTotalTpsQuery } from 'redux/api/swarm';
 import { useAction, useSelector } from 'redux/hooks';
 import { swarmActions } from 'redux/slice/swarm.slice';
 import { uiActions } from 'redux/slice/ui.slice';
@@ -23,6 +23,7 @@ export default function useSwarmUi() {
   const { data: totalRpsData, refetch: refetchTotalRps } = useGetTotalRpsQuery();
   const { data: totalTpsData, refetch: refetchTotalTps } = useGetTotalTpsQuery();
   const { data: statsData, refetch: refetchStats } = useGetStatsQuery();
+  const { data: statsCustomData, refetch: refetchStatsCustom } = useGetStatsCustomQuery();
   const { data: tasksData, refetch: refetchTasks } = useGetTasksQuery();
   const { data: exceptionsData, refetch: refetchExceptions } = useGetExceptionsQuery();
 
@@ -31,6 +32,9 @@ export default function useSwarmUi() {
 
   const updateStatsUi = () => {
     if (!statsData) {
+      return;
+    }
+    if (!statsCustomData) {
       return;
     }
 
@@ -47,6 +51,8 @@ export default function useSwarmUi() {
       totalAvgResponseTime,
     } = statsData;
 
+
+
     const time = new Date().toUTCString();
 
     if (shouldAddMarker) {
@@ -58,9 +64,15 @@ export default function useSwarmUi() {
     const totalFailPerSecRounded = roundToDecimalPlaces(totalFailPerSec, 2);
     const totalFailureRatioRounded = roundToDecimalPlaces(failRatio * 100);
 
+    const {
+      totalTps,
+    } = statsCustomData;
+
     const newChartEntry = {
       ...currentResponseTimePercentiles,
       currentRps: totalRpsRounded,
+      currentTps: totalTps,
+      currentRpsCustom: totalTps,
       currentFailPerSec: totalFailPerSecRounded,
       totalAvgResponseTime: roundToDecimalPlaces(totalAvgResponseTime, 2),
       userCount: userCount,
@@ -95,8 +107,20 @@ export default function useSwarmUi() {
     }
   }, [statsData]);
 
+  // useEffect(() => {
+  //   if (statsCustomData) {
+  //       const time = new Date().toUTCString();
+  //       const newChartEntry = {
+  //         currentRpsCustom: statsCustomData.totalRps,
+  //         currentTps: statsCustomData.totalTps,
+  //         time,
+  //       };
+  //       updateCharts(newChartEntry);
+  //   }
+  // }, [statsCustomData]);
+
   useInterval(updateStatsUi, STATS_REFETCH_INTERVAL, {
-    shouldRunInterval: !!statsData && shouldRunRefetchInterval,
+    shouldRunInterval: !!statsData || !!statsCustomData && shouldRunRefetchInterval,
   });
 
   useEffect(() => {
@@ -130,6 +154,9 @@ export default function useSwarmUi() {
     shouldRunInterval: shouldRunRefetchInterval,
   });
   useInterval(refetchStats, STATS_REFETCH_INTERVAL, {
+    shouldRunInterval: shouldRunRefetchInterval,
+  });
+  useInterval(refetchStatsCustom, STATS_REFETCH_INTERVAL, {
     shouldRunInterval: shouldRunRefetchInterval,
   });
   useInterval(refetchTasks, 5000, {

@@ -303,7 +303,7 @@ class WebUI:
                 environment.runner.exceptions = {}
             return "ok"
 
-        @app.route("/stat-----------s/report")
+        @app.route("/stats/report")
         @self.auth_required_if_enabled
         def stats_report() -> Response:
             theme = request.args.get("theme", "")
@@ -446,6 +446,77 @@ class WebUI:
 
             return jsonify(report)
 
+        @app.route("/stats_custom/requests")
+        @self.auth_required_if_enabled
+        @memoize(timeout=DEFAULT_CACHE_TIME, dynamic_timeout=True)
+        def request_stats_custom() -> Response:
+            stats: list[dict[str, Any]] = []
+            errors: list[StatsErrorDict] = []
+
+            if environment.runner is None:
+                report = {
+                    "stats": stats,
+                    "errors": errors,
+                    "total_rps": 0.0,
+                    "total_fail_per_sec": 0.0,
+                    "fail_ratio": 0.0,
+                    "current_response_time_percentile_1": None,
+                    "current_response_time_percentile_2": None,
+                    "state": STATE_MISSING,
+                    "user_count": 0,
+                }
+
+                if isinstance(environment.runner, MasterRunner):
+                    report.update({"workers": []})
+
+                return jsonify(report)
+
+            for s in chain(sort_stats(environment.runner.environment.custom_stats_two.entries), [environment.runner.environment.custom_stats_two.total]):
+                stats.append(s.to_dict())
+
+            errors = [e.serialize() for e in environment.runner.errors.values()]
+
+            # Truncate the total number of stats and errors displayed since a large number of rows will cause the app
+            # to render extremely slowly. Aggregate stats should be preserved.
+            truncated_stats = stats[:500]
+            if len(stats) > 500:
+                truncated_stats += [stats[-1]]
+
+            report = {"stats": truncated_stats, "errors": errors[:500]}
+            total_stats = stats[-1]
+
+            if stats:
+                report["total_tps"] = total_stats["current_rps"]
+                report["total_fail_per_sec"] = total_stats["current_fail_per_sec"]
+                report["total_avg_response_time"] = total_stats["avg_response_time"]
+                report["fail_ratio"] = environment.runner.environment.custom_stats_two.total.fail_ratio
+                report["current_response_time_percentiles"] = {
+                    f"response_time_percentile_{percentile}": environment.runner.environment.custom_stats_two.total.get_current_response_time_percentile(
+                        percentile
+                    )
+                    for percentile in stats_module.PERCENTILES_TO_CHART
+                }
+
+            if isinstance(environment.runner, MasterRunner):
+                workers = []
+                for worker in environment.runner.clients.values():
+                    workers.append(
+                        {
+                            "id": worker.id,
+                            "state": worker.state,
+                            "user_count": worker.user_count,
+                            "cpu_usage": worker.cpu_usage,
+                            "memory_usage": worker.memory_usage,
+                        }
+                    )
+
+                report["workers"] = workers
+
+            report["state"] = environment.runner.state
+            report["user_count"] = environment.runner.user_count
+
+            return jsonify(report)
+
         @app.route("/exceptions")
         @self.auth_required_if_enabled
         def exceptions() -> Response:
@@ -504,6 +575,8 @@ class WebUI:
                            [environment.runner.environment.custom_stats.total]):
                 stats.append(s.to_dict())
             total_stats = stats[-1]
+            print(total_stats)
+            print('RPS:', total_stats["current_rps"])
             report = {"total_rps": total_stats["current_rps"]}
 
             return jsonify(report)
@@ -511,21 +584,24 @@ class WebUI:
         @app.route("/total_test")
         @self.auth_required_if_enabled
         def total_test():
-            # sleep(random.randint(10,100))
+            sleep(random.randint(10,100))
             report = {}
 
             return jsonify(report)
+
         @app.route("/total_tps")
         @self.auth_required_if_enabled
         def total_tps():
+
             stats: list[dict[str, Any]] = []
-            for s in chain(sort_stats(environment.runner.stats.entries), [environment.runner.stats.total]):
+            for s in chain(sort_stats(environment.runner.environment.custom_stats_two.entries),
+                           [environment.runner.environment.custom_stats_two.total]):
                 stats.append(s.to_dict())
-
-            errors = [e.serialize() for e in environment.runner.errors.values()]
-
-            # Truncate the total number of stats and errors displayed since a large number of rows will cause the app
-            # to render extremely slowly. Aggregate stats should be preserved.
+            # #
+            # errors = [e.serialize() for e in environment.runner.errors.values()]
+            #
+            # # Truncate the total number of stats and errors displayed since a large number of rows will cause the app
+            # # to render extremely slowly. Aggregate stats should be preserved.
             truncated_stats = stats[:500]
             if len(stats) > 500:
                 truncated_stats += [stats[-1]]
@@ -536,6 +612,8 @@ class WebUI:
             if stats:
                 report["total_tps"] = total_stats["current_rps"]
 
+            print(total_stats)
+            print('TPS:', total_stats["current_rps"])
             return jsonify(report)
 
         @app.route("/login")
